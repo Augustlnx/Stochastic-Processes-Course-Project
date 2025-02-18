@@ -15,8 +15,9 @@ Note: The py file in ***code*** attached to this project is all the Python code 
 不同语言版本的项目简介：
 Project profiles in different languages:
 
+- [中文版本](#项目简介)
 - [English Version](#项目简介)
-- [中文版本](#中文)
+
 
 ---
 
@@ -26,13 +27,17 @@ Project profiles in different languages:
 
 ![image](https://github.com/user-attachments/assets/67274c39-456b-4c52-bd2d-a704d2e2b1e1)
 
+
+
 ### 基本规则与假设
 
 #### 地图设置：
 
 当前流行的版本具有多种复杂的规则，作为一个简单应用这里只应用了一个老版本的简单地图来构建toy model：
 
-![map](https://github.com/user-attachments/assets/e9fae56b-96c4-4a33-9439-1c537560cac1)
+<div align=center>
+<img src="https://github.com/user-attachments/assets/e9fae56b-96c4-4a33-9439-1c537560cac1" width="460px">
+</div>
 
 如图所示，地图为边长11个格子的正方形轮廓，总共40个格子，并从起点GO开始依次映射为 0~39 的数字，便于后续讨论。
 
@@ -86,12 +91,80 @@ Project profiles in different languages:
   - 从连续的时间角度来看，在相当长时间后，三个玩家停留在地图上的位置有怎样的概率分布？根据这一结果，玩家应该制定怎样的购买地产策略来使得自己尽可能获利？
 
 - **问题 3**：
-我们开始考虑玩家资金转移的过程，我们希望知道对于初始资金均为 K₀ 的三位玩家，给定地图上某一种地产的分布情况，当有一位玩家因为破产退出游戏需要多少时间？当游戏结束，即出现两位玩家破产时，又需要多少时间？
+我们开始考虑玩家资金转移的过程，我们希望知道对于初始资金相同的三位玩家，给定地图上某一种地产的分布情况，当有一位玩家因为破产退出游戏需要多少时间？当游戏结束，即出现两位玩家破产时，又需要多少时间？
 
+注：规则和问题1的前置分析参考了[project euler 84](https://projecteuler.net/problem%3D84)，这一部分的核心做法同知乎文章[使用马尔科夫链分析大富翁游戏](https://zhuanlan.zhihu.com/p/355680952)基本一致（事实上这个简单的模型似乎也只能这么处理），问题1.1来自于***Essentials of Stochastic Processes (Rick Durrett .2ndEdition 中译版)*** P95 例3.10，这一部分本文采用了两种方法从头详细推导并验证了结果的一致性；问题2.1来自于 ***Essentials of Stochastic Processes (Rick Durrett .2ndEdition)*** P28 例1.28，原书采用了蒙特卡洛的方法，本文采用了通过马尔科夫链直接进行的理论推导并验证了结果的一致性，问题2.2的分析方法应用了 ***STOCHASTIC PROCESSES (Ross .2ndEdition)*** 的封闭排队网络理论；问题3的建模参考了知乎文章[三人赌博交换硬币](https://zhuanlan.zhihu.com/p/461404452)的模型，在这里添加了资产交换的金额不固定等扩展条件，并推广了利用该鞅论分析的一般性情境。
 
+以上具体解决方法请参照原文。
 
 ---
 
-## 中文
+## Project Introduction
 
-// Your Chinese content here
+### Paper preview:
+
+![image](https://github.com/user-attachments/assets/67274c39-456b-4c52-bd2d-a704d2e2b1e1)
+
+
+
+### Basic Rules and Assumptions
+
+#### Map Layout:
+
+The current popular versions have many complex rules. For simplicity, this analysis uses an old version of the Monopoly map to construct a toy model:
+
+<div align=center>
+<img src="https://github.com/user-attachments/assets/e9fae56b-96c4-4a33-9439-1c537560cac1" width="460px">
+</div>
+
+As shown in the figure, the map is a square contour with 11 squares on each side, totaling 40 squares, numbered from 0 to 39 starting from GO for ease of discussion.
+
+The squares outside the four corners that are not colored (i.e., not CC or CH) are ordinary properties, which we treat as having the same general function. The following focuses on the special corner squares and the colored CC (Community Chest) and CH (Chance) squares:
+
+- **GO**: The starting point of the players, located at the top-left corner.
+- **G2J**: The Go To Jail square. When a player lands on this square, they are immediately sent to JAIL.
+- **JAIL**: The jail square. When a player lands on this square (including being sent here from G2J), they are put in jail and cannot move for the next two rounds.
+- **FP**: Free Parking. When a player lands on this square, nothing happens.
+
+For the Community Chest (CC) and Chance (CH) squares, we only consider the cards that cause movement (2 out of 16 Community Chest cards and 10 out of 16 Chance cards), such as "Go to Jail," and ignore the effects of other types of cards.
+
+#### Game Process:
+The game begins with three players, each starting with 1600 units of currency as their initial capital.
+
+- **Rolling Dice**: At the start of each round, players roll two dice and move forward by the sum of the dice.
+- **Buying Properties**: When a player lands on an unowned property square, they will purchase it if they have sufficient funds.
+- **Rent Payment**: If a player lands on a property owned by another player, they must pay a rent of 200 units of currency to the owner. Players also receive rent payments from other players landing on their properties.
+- **Bankruptcy**: If a player cannot afford the rent payment during a round, they will pay all their remaining funds and declare bankruptcy, exiting the game.
+
+#### Game Model Assumptions
+
+- Each player's actions are independent, meaning the number of steps taken in each round is solely determined by the dice roll.
+- In normal gameplay, drawing Community Chest or Chance cards involves drawing from a deck. To construct a Markov process, we assume that each card draw is with replacement and reshuffling.
+
+---
+
+### Research Questions
+
+This section has a strong flavor of modeling for national competitions.
+
+In the game of Monopoly, we are interested in the following questions:
+
+- **Question 1**:
+  Players wish to estimate the probability of their position after several rounds to make reasonable financial plans. The specific scenarios are:
+  
+  - Under a simplified rule, for a player A at position i, if they only move by rolling dice, what is the distribution of the number of steps they exceed position i after many rounds?
+  - If a player is at square i, what is the probability of reaching square 0 (GO) before reaching square 10 (Jail)? How many rounds does it take on average?
+  - Assuming the game just started, how long does it take for all squares to be visited and purchased by the three players?
+
+- **Question 2**:
+  In the long run, after many rounds, where will the players be located? We can model this problem from different perspectives:
+
+  - From a discrete round perspective, what is the probability distribution of a player staying on each square in a given round? If currently at square i, how many rounds does it take to return to this square on average?
+  - From a continuous time perspective, what is the probability distribution of the three players' positions on the map after a long time? Based on this result, what purchasing strategy should players adopt to maximize their profits?
+
+- **Question 3**:
+  We begin to consider the process of players' capital transfer. We want to know, for three players with the same initial capital, given a certain distribution of properties on the map, how long does it take for one player to go bankrupt and exit the game? When the game ends, i.e., when two players go bankrupt, how long does it take?
+
+**Note**: The rules and preliminary analysis of Question 1 refer to [Project Euler 84](https://projecteuler.net/problem=84). The core approach is consistent with the article [Using Markov Chains to Analyze Monopoly](https://zhuanlan.zhihu.com/p/355680952) on Zhihu. Question 1.1 is from ***Essentials of Stochastic Processes (Rick Durrett, 2nd Edition, Chinese Translation)***, page 95, Example 3.10. This paper provides detailed derivations using two methods and verifies the consistency of the results. Question 2.1 is from ***Essentials of Stochastic Processes (Rick Durrett, 2nd Edition)***, page 28, Example 1.28. The original book used a Monte Carlo method, while this paper provides a theoretical derivation using Markov chains and verifies the consistency of the results. The analysis of Question 2.2 applies the closed queuing network theory from ***Stochastic Processes (Ross, 2nd Edition)***. The modeling of Question 3 refers to the article [Three People Gambling and Exchanging Coins](https://zhuanlan.zhihu.com/p/461404452) on Zhihu, with added extensions such as variable amounts of capital exchange and generalizations of the application of martingale theory.
+
+For specific solutions, please refer to the original text.
